@@ -107,12 +107,52 @@ var nrt6poolConfig = {
     connectionLimit: 10,
     queueLimit: 0
 };
+var max3poolConfig = {
+    host: "192.168.11.26",
+    user: "nrt",
+    password: "nrt",
+    database: "nrt_controls",
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+};
+var max4poolConfig = {
+    host: "192.168.11.28",
+    user: "nrt",
+    password: "nrt",
+    database: "nrt_controls",
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+};
+var max5poolConfig = {
+    host: "192.168.11.30",
+    user: "nrt",
+    password: "nrt",
+    database: "nrt_controls",
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+};
+var max6poolConfig = {
+    host: "192.168.11.32",
+    user: "nrt",
+    password: "nrt",
+    database: "nrt_controls",
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+};
 var nrt1pool = mysql.createPool(nrt1poolConfig);
 var nrt2pool = mysql.createPool(nrt2poolConfig);
 var nrt3pool = mysql.createPool(nrt3poolConfig);
 var nrt4pool = mysql.createPool(nrt4poolConfig);
 var nrt5pool = mysql.createPool(nrt5poolConfig);
 var nrt6pool = mysql.createPool(nrt6poolConfig);
+var max3pool = mysql.createPool(max3poolConfig);
+var max4pool = mysql.createPool(max4poolConfig);
+var max5pool = mysql.createPool(max5poolConfig);
+var max6pool = mysql.createPool(max6poolConfig);
 var bhspool = mysql.createPool(bhspoolConfig);
 //const promisePool = pool.promise();
 setInterval(function () {
@@ -123,7 +163,11 @@ setInterval(function () {
     getData(nrt4pool, 'nrt04_db');
     getData(nrt5pool, 'nrt05_db');
     getData(nrt6pool, 'nrt06_db');
-}, 10000);
+    getData(max3pool, 'max03_db');
+    getData(max4pool, 'max04_db');
+    getData(max5pool, 'max05_db');
+    getData(max6pool, 'max06_db');
+}, 30000);
 function getData(_pool, dbtable) {
     return __awaiter(this, void 0, void 0, function () {
         var _this = this;
@@ -134,7 +178,7 @@ function getData(_pool, dbtable) {
                 // Use the connection
                 //await connection.ping();
                 return [4 /*yield*/, _pool.query("SELECT ui_name as name, material_id , \n    (select ui_color from nrt_controls.scada_object_material_info as b where unit_id = 1 and a.material_id =b.material_id  limit 1) as color  , \n    avg(per_cent_identified) as percent FROM nrt_controls.scada_object_material_info as a  group by  material_id, name,  color ", function (err, rows, fields) { return __awaiter(_this, void 0, void 0, function () {
-                        var ui_name, ui_color, percent, i, dbinsert;
+                        var ui_name, ui_color, percent, total_percent, i, dbinsert;
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
@@ -145,19 +189,14 @@ function getData(_pool, dbtable) {
                                     ui_name = [];
                                     ui_color = [];
                                     percent = [];
-                                    for (i = 1; i < 14; i++) {
-                                        if (rows[i - 1] != undefined)
+                                    total_percent = 0;
+                                    for (i = 1; i < 15; i++) {
+                                        if (rows[i - 1] != undefined) {
                                             ui_name[i] = rows[i - 1]["name"];
-                                        //else
-                                        //  ui_name[i] = ""
-                                        if (rows[i - 1] != undefined)
                                             ui_color[i] = rows[i - 1]["color"];
-                                        // else
-                                        //   ui_color[i] = ""
-                                        if (rows[i - 1] != undefined)
                                             percent[i] = rows[i - 1]["percent"];
-                                        // else
-                                        //   percent[i] = 0
+                                            total_percent = total_percent + percent[i];
+                                        }
                                     }
                                     dbinsert = {
                                         t_stamp: new Date(),
@@ -204,11 +243,16 @@ function getData(_pool, dbtable) {
                                         percent_13: percent[13],
                                         percent_14: percent[14]
                                     };
+                                    if (!(total_percent > 0)) return [3 /*break*/, 3];
                                     return [4 /*yield*/, bhspool.query('insert into ' + dbtable + ' set ?', dbinsert)];
                                 case 1:
                                     _a.sent();
-                                    console.log("* ---");
-                                    return [2 /*return*/, rows];
+                                    console.log("* ins ---");
+                                    return [4 /*yield*/, bhspool.query('delete from ' + dbtable + ' WHERE t_stamp < DATE_ADD(Now() , interval -30 day )')];
+                                case 2:
+                                    _a.sent();
+                                    _a.label = 3;
+                                case 3: return [2 /*return*/];
                             }
                         });
                     }); })];

@@ -73,12 +73,57 @@ let nrt6poolConfig = {
   queueLimit: 0
 };
 
+let max3poolConfig = {
+  host: "192.168.11.26",
+  user: "nrt",
+  password: "nrt",
+  database: "nrt_controls",
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+};
+
+let max4poolConfig = {
+  host: "192.168.11.28",
+  user: "nrt",
+  password: "nrt",
+  database: "nrt_controls",
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+};
+
+let max5poolConfig = {
+  host: "192.168.11.30",
+  user: "nrt",
+  password: "nrt",
+  database: "nrt_controls",
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+};
+
+let max6poolConfig = {
+  host: "192.168.11.32",
+  user: "nrt",
+  password: "nrt",
+  database: "nrt_controls",
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+};
+
+
 let nrt1pool = mysql.createPool(nrt1poolConfig);
 let nrt2pool = mysql.createPool(nrt2poolConfig);
 let nrt3pool = mysql.createPool(nrt3poolConfig);
 let nrt4pool = mysql.createPool(nrt4poolConfig);
 let nrt5pool = mysql.createPool(nrt5poolConfig);
 let nrt6pool = mysql.createPool(nrt6poolConfig);
+let max3pool = mysql.createPool(max3poolConfig);
+let max4pool = mysql.createPool(max4poolConfig);
+let max5pool = mysql.createPool(max5poolConfig);
+let max6pool = mysql.createPool(max6poolConfig);
 let bhspool = mysql.createPool(bhspoolConfig);
 //const promisePool = pool.promise();
 setInterval(() => {
@@ -89,7 +134,11 @@ setInterval(() => {
   getData(nrt4pool,  'nrt04_db');
   getData(nrt5pool,  'nrt05_db');
   getData(nrt6pool,  'nrt06_db');
-}, 10000);
+  getData(max3pool,  'max03_db');
+  getData(max4pool,  'max04_db');
+  getData(max5pool,  'max05_db');
+  getData(max6pool,  'max06_db');
+}, 30000);
 
 async function getData(_pool: mysql.Pool,  dbtable: string) {
   //const connection = await pool.getConnection();
@@ -116,27 +165,17 @@ async function getData(_pool: mysql.Pool,  dbtable: string) {
       let ui_name = [];
       let ui_color = [];
       let percent = [];
-      for (let i = 1; i < 14; i++) {
-        if (rows[i - 1] != undefined)
+      let total_percent = 0;
+      for (let i = 1; i < 15; i++) {
+        if (rows[i - 1] != undefined){
           ui_name[i] = rows[i - 1]["name"];
-        //else
-        //  ui_name[i] = ""
-        if (rows[i - 1] != undefined)
           ui_color[i] = rows[i - 1]["color"];
-        // else
-        //   ui_color[i] = ""
-        if (rows[i - 1] != undefined)
           percent[i] = rows[i - 1]["percent"];
-        // else
-        //   percent[i] = 0
-      }
-      // console.log(
-      //   "u1_name1:%s ui_name2:%s percent:%s",
-      //   ui_name[16],
-      //   ui_name[2],
-      //   percent[5]
-      // );
+          total_percent = total_percent + percent[i];
+        }
      
+      }
+    
       let dbinsert = {
         t_stamp: new Date(),
         ui_name_1: ui_name[1],
@@ -187,9 +226,14 @@ async function getData(_pool: mysql.Pool,  dbtable: string) {
 
 
       };
-      await bhspool.query('insert into ' + dbtable + ' set ?', dbinsert);
-      console.log("* ---");
-      return rows;
+      if (total_percent > 0){
+        await bhspool.query('insert into ' + dbtable + ' set ?', dbinsert);
+        console.log("* ins ---");
+        
+        await bhspool.query( 'delete from ' + dbtable + ' WHERE t_stamp < DATE_ADD(Now() , interval -30 day )');
+
+      }
+     
     }
   );
 
