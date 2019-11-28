@@ -45,7 +45,16 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var mysql = __importStar(require("mysql2/promise"));
 var bhspoolConfig = {
-    host: "10.100.1.130",
+    host: "localhost",
+    user: "bhs",
+    password: "bhs",
+    database: "db2118",
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+};
+var nrt1poolConfig = {
+    host: "192.168.11.10",
     user: "nrt",
     password: "nrt",
     database: "nrt_controls",
@@ -53,8 +62,44 @@ var bhspoolConfig = {
     connectionLimit: 10,
     queueLimit: 0
 };
-var nrt1poolConfig = {
-    host: "10.100.1.130",
+var nrt2poolConfig = {
+    host: "192.168.11.12",
+    user: "nrt",
+    password: "nrt",
+    database: "nrt_controls",
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+};
+var nrt3poolConfig = {
+    host: "192.168.11.14",
+    user: "nrt",
+    password: "nrt",
+    database: "nrt_controls",
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+};
+var nrt4poolConfig = {
+    host: "192.168.11.16",
+    user: "nrt",
+    password: "nrt",
+    database: "nrt_controls",
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+};
+var nrt5poolConfig = {
+    host: "192.168.11.28",
+    user: "nrt",
+    password: "nrt",
+    database: "nrt_controls",
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+};
+var nrt6poolConfig = {
+    host: "192.168.11.20",
     user: "nrt",
     password: "nrt",
     database: "nrt_controls",
@@ -63,13 +108,23 @@ var nrt1poolConfig = {
     queueLimit: 0
 };
 var nrt1pool = mysql.createPool(nrt1poolConfig);
+var nrt2pool = mysql.createPool(nrt2poolConfig);
+var nrt3pool = mysql.createPool(nrt3poolConfig);
+var nrt4pool = mysql.createPool(nrt4poolConfig);
+var nrt5pool = mysql.createPool(nrt5poolConfig);
+var nrt6pool = mysql.createPool(nrt6poolConfig);
 var bhspool = mysql.createPool(bhspoolConfig);
 //const promisePool = pool.promise();
 setInterval(function () {
     console.log("call db");
-    getData(nrt1pool, 14, 'nrt01_db');
+    getData(nrt1pool, 'nrt01_db');
+    getData(nrt2pool, 'nrt02_db');
+    getData(nrt3pool, 'nrt03_db');
+    getData(nrt4pool, 'nrt04_db');
+    getData(nrt5pool, 'nrt05_db');
+    getData(nrt6pool, 'nrt06_db');
 }, 10000);
-function getData(_pool, items, dbtable) {
+function getData(_pool, dbtable) {
     return __awaiter(this, void 0, void 0, function () {
         var _this = this;
         return __generator(this, function (_a) {
@@ -90,10 +145,19 @@ function getData(_pool, items, dbtable) {
                                     ui_name = [];
                                     ui_color = [];
                                     percent = [];
-                                    for (i = 1; i < items; i++) {
-                                        ui_name[i] = rows[i - 1]["name"];
-                                        ui_color[i] = rows[i - 1]["color"];
-                                        percent[i] = rows[i - 1]["percent"];
+                                    for (i = 1; i < 14; i++) {
+                                        if (rows[i - 1] != undefined)
+                                            ui_name[i] = rows[i - 1]["name"];
+                                        //else
+                                        //  ui_name[i] = ""
+                                        if (rows[i - 1] != undefined)
+                                            ui_color[i] = rows[i - 1]["color"];
+                                        // else
+                                        //   ui_color[i] = ""
+                                        if (rows[i - 1] != undefined)
+                                            percent[i] = rows[i - 1]["percent"];
+                                        // else
+                                        //   percent[i] = 0
                                     }
                                     dbinsert = {
                                         t_stamp: new Date(),
