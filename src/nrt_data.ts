@@ -170,7 +170,7 @@ async function getData(_pool: mysql.Pool,  dbtable: string) {
         console.log("error:%s", err);
       }
 
-      console.log("t_stamp=%s  db=%s ", new Date(),dbtable);
+      console.log("getdata() t_stamp=%s  db=%s ", new Date(),dbtable);
       // rows.forEach(res => {
       //   console.log("res: %s color:%s  value:%s", res['name'], res['color'], res['percent']);
       // });
@@ -178,7 +178,8 @@ async function getData(_pool: mysql.Pool,  dbtable: string) {
       let ui_color = [];
       let percent = [];
       let total_percent = 0;
-      for (let i = 1; i < 15; i++) {
+      let tp = 0;
+      for (let i = 1; i < 19; i++) {
         if (rows[i - 1] != undefined){
           ui_name[i] = rows[i - 1]["name"];
           ui_color[i] = rows[i - 1]["color"];
@@ -187,6 +188,7 @@ async function getData(_pool: mysql.Pool,  dbtable: string) {
         }
      
       }
+      tp = 1;
     
       let dbinsert = {
         t_stamp: new Date(),
@@ -250,7 +252,7 @@ async function getData(_pool: mysql.Pool,  dbtable: string) {
 
 
       };
-      if (total_percent > 0){
+      if (tp > 0){
         await bhspool.query('insert into ' + dbtable + ' set ?', dbinsert);
         console.log("* ins --- db=%s ", dbtable);
         
