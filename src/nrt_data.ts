@@ -7,9 +7,9 @@ let bhspoolConfig = {
   host: "localhost",
   user: "bhs",
   password: "bhs",
-  database: "db2118",
+  database: "db1",
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 5,
   queueLimit: 0
 };
 
@@ -19,7 +19,7 @@ let nrt1poolConfig = {
   password: "nrt",
   database: "nrt_controls",
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 5,
   queueLimit: 0
 };
 
@@ -29,7 +29,7 @@ let nrt2poolConfig = {
   password: "nrt",
   database: "nrt_controls",
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 5,
   queueLimit: 0
 };
 
@@ -39,7 +39,7 @@ let nrt3poolConfig = {
   password: "nrt",
   database: "nrt_controls",
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 5,
   queueLimit: 0
 };
 
@@ -49,11 +49,11 @@ let nrt4poolConfig = {
   password: "nrt",
   database: "nrt_controls",
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 5,
   queueLimit: 0
 };
 
-let nrt5poolConfig = {
+/* let nrt5poolConfig = {
   host: "192.168.11.28",
   user: "nrt",
   password: "nrt",
@@ -72,8 +72,18 @@ let nrt6poolConfig = {
   connectionLimit: 10,
   queueLimit: 0
 };
+ */
+let max1poolConfig = {
+  host: "192.168.11.24",
+  user: "nrt",
+  password: "nrt",
+  database: "nrt_controls",
+  waitForConnections: true,
+  connectionLimit: 5,
+  queueLimit: 0
+};
 
-let max3poolConfig = {
+let max2poolConfig = {
   host: "192.168.11.26",
   user: "nrt",
   password: "nrt",
@@ -83,33 +93,33 @@ let max3poolConfig = {
   queueLimit: 0
 };
 
-let max4poolConfig = {
+let max3poolConfig = {
   host: "192.168.11.28",
   user: "nrt",
   password: "nrt",
   database: "nrt_controls",
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 5,
   queueLimit: 0
 };
 
-let max5poolConfig = {
+let max4poolConfig = {
   host: "192.168.11.30",
   user: "nrt",
   password: "nrt",
   database: "nrt_controls",
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 5,
   queueLimit: 0
 };
 
-let max6poolConfig = {
+let max5poolConfig = {
   host: "192.168.11.32",
   user: "nrt",
   password: "nrt",
   database: "nrt_controls",
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 5,
   queueLimit: 0
 };
 
@@ -118,12 +128,13 @@ let nrt1pool = mysql.createPool(nrt1poolConfig);
 let nrt2pool = mysql.createPool(nrt2poolConfig);
 let nrt3pool = mysql.createPool(nrt3poolConfig);
 let nrt4pool = mysql.createPool(nrt4poolConfig);
-let nrt5pool = mysql.createPool(nrt5poolConfig);
-let nrt6pool = mysql.createPool(nrt6poolConfig);
+//let nrt5pool = mysql.createPool(nrt5poolConfig);
+//let nrt6pool = mysql.createPool(nrt6poolConfig);
+let max1pool = mysql.createPool(max1poolConfig);
+let max2pool = mysql.createPool(max2poolConfig);
 let max3pool = mysql.createPool(max3poolConfig);
-let max4pool = mysql.createPool(max4poolConfig);
 let max5pool = mysql.createPool(max5poolConfig);
-let max6pool = mysql.createPool(max6poolConfig);
+let max4pool = mysql.createPool(max4poolConfig);
 let bhspool = mysql.createPool(bhspoolConfig);
 //const promisePool = pool.promise();
 setInterval(() => {
@@ -132,12 +143,13 @@ setInterval(() => {
   getData(nrt2pool,  'nrt02_db');
   getData(nrt3pool,  'nrt03_db');
   getData(nrt4pool,  'nrt04_db');
-  getData(nrt5pool,  'nrt05_db');
-  getData(nrt6pool,  'nrt06_db');
+  //getData(nrt5pool,  'nrt05_db');
+  //getData(nrt6pool,  'nrt06_db');
+  getData(max1pool,  'max01_db');
+  getData(max2pool,  'max02_db');
   getData(max3pool,  'max03_db');
-  getData(max4pool,  'max04_db');
   getData(max5pool,  'max05_db');
-  getData(max6pool,  'max06_db');
+  getData(max4pool,  'max04_db');
 }, 30000);
 
 async function getData(_pool: mysql.Pool,  dbtable: string) {
@@ -158,7 +170,7 @@ async function getData(_pool: mysql.Pool,  dbtable: string) {
         console.log("error:%s", err);
       }
 
-      console.log("t_stamp=%s  ", new Date());
+      console.log("t_stamp=%s  db=%s ", new Date(),dbtable);
       // rows.forEach(res => {
       //   console.log("res: %s color:%s  value:%s", res['name'], res['color'], res['percent']);
       // });
@@ -192,6 +204,10 @@ async function getData(_pool: mysql.Pool,  dbtable: string) {
         ui_name_12: ui_name[12],
         ui_name_13: ui_name[13],
         ui_name_14: ui_name[14],
+        ui_name_15: ui_name[15],
+        ui_name_16: ui_name[16],
+        ui_name_17: ui_name[17],
+        ui_name_18: ui_name[18],
 
      
         ui_color_1: ui_color[1],
@@ -208,6 +224,10 @@ async function getData(_pool: mysql.Pool,  dbtable: string) {
         ui_color_12: ui_color[12],
         ui_color_13: ui_color[13],
         ui_color_14: ui_color[14],
+        ui_color_15: ui_color[15],
+        ui_color_16: ui_color[16],
+        ui_color_17: ui_color[17],
+        ui_color_18: ui_color[18],
 
         percent_1: percent[1],
         percent_2: percent[2],
@@ -222,15 +242,19 @@ async function getData(_pool: mysql.Pool,  dbtable: string) {
         percent_11: percent[11],
         percent_12: percent[12],
         percent_13: percent[13],
-        percent_14: percent[14]
+        percent_14: percent[14],
+        percent_15: percent[15],
+        percent_16: percent[16],
+        percent_17: percent[17],
+        percent_18: percent[18]
 
 
       };
       if (total_percent > 0){
         await bhspool.query('insert into ' + dbtable + ' set ?', dbinsert);
-        console.log("* ins ---");
+        console.log("* ins --- db=%s ", dbtable);
         
-        await bhspool.query( 'delete from ' + dbtable + ' WHERE t_stamp < DATE_ADD(Now() , interval -30 day )');
+        await bhspool.query( 'delete from ' + dbtable + ' WHERE t_stamp < DATE_ADD(Now() , interval -120 day )');
 
       }
      
